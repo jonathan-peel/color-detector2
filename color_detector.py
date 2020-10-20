@@ -5,6 +5,7 @@ import matplotlib as plt
 import os
 import cv2
 from time import sleep
+from scipy.stats import mode
 
 # set cap to continuously capture images from the camera
 cap = cv2.VideoCapture(2)
@@ -31,18 +32,19 @@ while(True):
         frame_hsv = plt.colors.rgb_to_hsv(frame)
         frame_hue = frame_hsv[:, :, 2]
 
+        # Quantise each pixel's hue to the closest 10 degrees
+        frame_hue = np.round(frame_hue, -1)
+
         # Divide the frame into n_splits sections
-        # frame_height = frame_hue.shape[0]
-        # split_height = round(frame_height / n_splits)
+        splits = np.array_split(frame_hue, 7)
 
-        # splits = np.array_split(frame_hue, 7)
 
+        split_colors = []
         for split in splits:
-            
+            split_color = int(mode(split, axis=None).mode)
+            split_colors.append(split_color)
 
-
-        print(frame_hue)
-
+        print(split_colors)
 
     sleep(1)
     i += 1
