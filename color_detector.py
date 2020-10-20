@@ -8,6 +8,13 @@ import cv2
 from time import sleep
 from scipy.stats import mode
 
+""" This program calculates the most present color of a duckiebot frame,
+    recorded once a second. The most present color is represented by 
+    the mode of the pixel hues, rounded to the nearest 10. This better
+    represents human vision than averaging. Each frame is divided into 
+    N_SPLITS sections, which is an environment variable set at runtime.
+"""
+
 # set cap to continuously capture images from the camera
 cap = cv2.VideoCapture(2)
 
@@ -17,14 +24,12 @@ try:
     n_splits = int(n_splits) # Rounds to the nearest integer
 except ValueError:
     print("Please input an integer representing number of splits as -e \
-        N_SPLITS=<integer>, defaulting to N_SPLITS=1")
+N_SPLITS=<integer>, defaulting to N_SPLITS=1")
     n_splits = 1
     
 i = 0
 
 while(True):
-    print("Frame " + str(i))
-    
     # Capture frame-by-frame
     ret, frame = cap.read()
 
@@ -44,17 +49,14 @@ while(True):
 
         # For each split, find the most present (modal) color
         split_colors = []
-        hsv_splits = []
         for split in splits:
             split_color = int(mode(split, axis=None).mode)
             split_colors.append(split_color)
-            hsv_splits.append([split_color, 1, 1])
 
+        # Print the most present colors, listed by split
+        print("The most present hues for each splits 1 to {} of frame {} are \
+listed below in degrees.".format(n_splits, i))
         print(split_colors)
-        print(hsv_splits)
-        rgb_splits = matplotlib.colors.hsv_to_rgb(hsv_splits)
-        print(rgb_splits)
-        plt.imshow(rgb_splits)
 
     sleep(1)
     i += 1
